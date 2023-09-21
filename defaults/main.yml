@@ -298,7 +298,7 @@ amazon2cis_rule_6_2_6: true
 amazon2cis_rule_6_2_7: true
 amazon2cis_rule_6_2_8: true
 amazon2cis_rule_6_2_9: true
-amazon2cis_rule_6_2_10: true
+amazon2cis_rule_6_2_10: false
 amazon2cis_rule_6_2_11: true
 amazon2cis_rule_6_2_12: true
 amazon2cis_rule_6_2_13: true
