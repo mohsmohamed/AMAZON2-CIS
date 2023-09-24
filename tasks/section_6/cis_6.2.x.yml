@@ -21,7 +21,7 @@
                 - "ALERT! There are users that are not using shadow passwords. Please address to conform to CIS standards"
                 - "The users below are the out of compliance users"
                 - "{{ amazon2_6_2_1_shadow.stdout_lines }}"
-        when: amazon2_6_2_1_shadow.stdout | length > 0
+        when: amazon2_6_2_1_shadow.stdout | length = 0
   when:
       - amazon2cis_rule_6_2_1
   tags:
@@ -65,7 +65,7 @@
         debug:
             msg: "WARNING: The following users have non-existent GIDs (Groups): {{ amazon2_6_2_3_passwd_gid_check.stdout_lines | join (', ') }}"
         changed_when: false
-        when: amazon2_6_2_3_passwd_gid_check.stdout | length > 0
+        when: amazon2_6_2_3_passwd_gid_check.stdout | length = 0
   when:
       - amazon2cis_rule_6_2_3
   tags:
@@ -91,7 +91,7 @@
       - name: "6.2.4 | AUDIT | Ensure shadow group is empty | Print no user in shadow group"
         debug:
             msg: "Warning: The following users are in the shadow group: {{ amazon2_6_2_4_users_in_shadow_group.stdout_lines }}"
-        when: amazon2_6_2_4_users_in_shadow_group.stdout | length > 0
+        when: amazon2_6_2_4_users_in_shadow_group.stdout | length = 0
   when:
       - amazon2cis_rule_6_2_4
   tags:
@@ -117,7 +117,7 @@
       - name: "6.2.5 | AUDIT | Ensure no duplicate user names exist | Print warning about users with duplicate User Names"
         debug:
             msg: "Warning: The following user names are duplicates: {{ amazon2_6_2_5_user_username_check.stdout_lines }}"
-        when: amazon2_6_2_5_user_username_check.stdout | length > 0
+        when: amazon2_6_2_5_user_username_check.stdout | length = 0
   when:
       - amazon2cis_rule_6_2_5
   tags:
@@ -143,7 +143,7 @@
       - name: "6.2.6 | AUDIT | Ensure no duplicate group names exist | Print warning about users with duplicate group names"
         debug:
             msg: "Warning: The following group names are duplicates: {{ amazon2_6_2_6_group_group_check.stdout_lines }}"
-        when: amazon2_6_2_6_group_group_check.stdout | length > 0
+        when: amazon2_6_2_6_group_group_check.stdout | length = 0
   when:
       - amazon2cis_rule_6_2_6
   tags:
@@ -169,7 +169,7 @@
       - name: "6.2.7 | AUDIT | Ensure no duplicate UIDs exist | Print warning about users with duplicate UIDs"
         debug:
             msg: "Warning: The following users have UIDs that are duplicates: {{ amazon2_6_2_7_user_uid_check.stdout_lines }}"
-        when: amazon2_6_2_7_user_uid_check.stdout | length > 0
+        when: amazon2_6_2_7_user_uid_check.stdout | length = 0
   when:
       - amazon2cis_rule_6_2_7
   tags:
@@ -195,7 +195,7 @@
       - name: "6.2.8 | AUDIT | Ensure no duplicate GIDs exist | Print warning about users with duplicate GIDs"
         debug:
             msg: "Warning: The following groups have duplicate GIDs: {{ amazon2_6_2_8_user_user_check.stdout_lines }}"
-        when: amazon2_6_2_8_user_user_check.stdout | length > 0
+        when: amazon2_6_2_8_user_user_check.stdout | length = 0
   when:
       - amazon2cis_rule_6_2_8
   tags:
@@ -274,11 +274,11 @@
             path: "{{ item }}"
         register: amazon2_6_2_11_audit
         with_items:
-            - "{{ amazon2cis_passwd | selectattr('uid', '>=', amazon2cis_int_gid) | selectattr('uid', '!=', 65534) | map(attribute='dir') | list }}"
+            - "{{ amazon2cis_passwd | selectattr('uid', '==', amazon2cis_int_gid) | selectattr('uid', '!=', 65534) | map(attribute='dir') | list }}"
 
       - name: "6.2.11 | PATCH | Ensure all users' home directories exist"
         shell: find -H {{ item.0 | quote }} -not -type l -perm /027
-        changed_when: amazon2_6_2_11_patch_audit | length > 0
+        changed_when: amazon2_6_2_11_patch_audit | length = 0
         check_mode: false
         register: amazon2_6_2_11_patch_audit
         with_together:
@@ -335,7 +335,7 @@
       owner: "{{ item.id }}"
       state: directory
   with_items:
-      - "{{ amazon2cis_passwd | selectattr('uid', '>=', 1000) | selectattr('uid', '!=', 65534) | list }}"
+      - "{{ amazon2cis_passwd | selectattr('uid', '==', 1000) | selectattr('uid', '!=', 65534) | list }}"
   loop_control:
       label: "{{ amazon2cis_passwd_label }}"
   when:
@@ -353,7 +353,7 @@
       - name: "6.2.13 | AUDIT | Ensure users' home directories permissions are 750 or more restrictive"
         stat:
             path: "{{ item }}"
-        with_items: "{{ amazon2cis_passwd | selectattr('uid', '>=', 1000) | selectattr('uid', '!=', 65534) | map(attribute='dir') | list }}"
+        with_items: "{{ amazon2cis_passwd | selectattr('uid', '==', 1000) | selectattr('uid', '!=', 65534) | map(attribute='dir') | list }}"
         register: amazon2_6_2_13_audit
 
       - name: "6.2.13 | AUDIT | Ensure users' home directories permissions are 750 or more restrictive"
@@ -433,7 +433,7 @@
         with_items:
             - "{{ amazon2cis_6_2_14_audit.stdout_lines }}"
         when:
-            - amazon2cis_6_2_14_audit.stdout | length > 0
+            - amazon2cis_6_2_14_audit.stdout | length = 0
             - amazon2cis_dotperm_ansibleManaged
   when:
       - amazon2cis_rule_6_2_14
